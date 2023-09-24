@@ -15,29 +15,29 @@ $('document').ready(function () {
       alerts[type](message)
     })
   }
-  $(window).on('action:ajaxify.end', function () {
-    if (ajaxify.data.template.compose && ajaxify.data.isMain && ajaxify.data.topic) {
-      if (!app.user.isAdmin) return
-      // seperate composer page
-      const actionBar = $('.composer .action-bar')
-      addNewsletterDropdown(actionBar)
-    }
-  })
 
-  $(window).on('action:composer.loaded', function (ev, data) {
-    // Return early if it is a reply and not a new topic
-    if (data.hasOwnProperty('composerData') && !data.composerData.isMain) return
+  $(window).on('action:topic.loaded', function (ev, data) {
+    console.log('action:topic.loaded.hello')
     if (!app.user.isAdmin) return
-
-    const actionBar = $('.composer[data-uuid="' + data.post_uuid + '"] .action-bar')
+    // topic page
+    const actionBar = $('.topic .action-bar')
     addNewsletterDropdown(actionBar)
 
+    function addNewsletterDropdown(actionBar) {
+      translate('[[newsletter:send.as.newsletter]]', function (translated) {
+        const $container = actionBar.find('.dropdown-menu')
+  
+        const item = $('<li><a class="dropdown-item" href="#"><i class="fa fa-fw fa-newspaper-o"></i> ' + translated + '</a></li>')
+  
+        item.on('click', openNewsletterModal)
+  
+        $container.append(item)
+      })
+    }
     async function openNewsletterModal() {
-      const $composer = $('.composer[data-uuid="' + data.post_uuid + '"]')
       const groups = await socket.emit('admin.Newsletter.getGroups')
-
-      let title = $composer.find('.title').val() || 'Newsletter Subject'
-      let body = $composer.find('.preview').html() || 'Newsletter Body'
+      const title = data.title
+      let body = data.posts[0].content
 
       // Append the full path to uploaded images/files.
       let port = window.location.port ? `:${window.location.port}` : ''
@@ -120,18 +120,6 @@ $('document').ready(function () {
 
         $everyone.on('change', displayCustomGroups)
         $blacklistCheck.on('change', displayBlacklist)
-      })
-    }
-
-    function addNewsletterDropdown(actionBar) {
-      translate('[[newsletter:send.as.newsletter]]', function (translated) {
-        const $container = actionBar.find('.dropdown-menu')
-
-        const item = $('<li><a class="dropdown-item" href="#"><i class="fa fa-fw fa-newspaper-o"></i> ' + translated + '</a></li>')
-
-        item.on('click', openNewsletterModal)
-
-        $container.append(item)
       })
     }
   })

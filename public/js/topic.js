@@ -37,6 +37,7 @@ $('document').ready(function () {
     async function openNewsletterModal() {
       const groups = await socket.emit('admin.Newsletter.getGroups')
       const title = data.title
+      const url = data.url
       let body = data.posts[0].content
 
       // Append the full path to uploaded images/files.
@@ -59,6 +60,7 @@ $('document').ready(function () {
               className: 'btn-success',
               callback: async () => {
                 let groups = getSelectedGroups()
+                let topicUrl = $('#checkbox-include-link')[0].checked ? url : undefined
                 let override = $('#checkbox-override')[0].checked
                 let blacklist = $blacklistCheck[0].checked ? $blacklist.val().split(/[\n, ]+/).filter(e => e).map(e => e.trim()) : []
 
@@ -67,7 +69,7 @@ $('document').ready(function () {
                   return false
                 }
 
-                await socket.emit('admin.Newsletter.send', {subject: title, body, groups, override, blacklist})
+                await socket.emit('admin.Newsletter.send', {subject: title, body, groups, topicUrl, override, blacklist})
                 // TODO: return info
 
                 alertType('success', 'Newsletter Sent')

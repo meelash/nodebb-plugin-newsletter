@@ -1,5 +1,9 @@
   <div class="form-group">
     <label class="form-label" for="newsletter-group">Options</label>
+    <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="checkbox-include-link">
+      <input type="checkbox" id="checkbox-include-link" class="mdl-switch__input">
+      <span class="mdl-switch__label">Include link to topic?</span>
+    </label>
     <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="checkbox-override">
       <input type="checkbox" id="checkbox-override" class="mdl-switch__input">
       <span class="mdl-switch__label">Override user subscription settings?</span>

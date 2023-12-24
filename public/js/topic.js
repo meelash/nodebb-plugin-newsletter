@@ -17,8 +17,7 @@ $('document').ready(function () {
   }
 
   $(window).on('action:topic.loaded', function (ev, data) {
-    console.log('action:topic.loaded.hello')
-    if (!app.user.isAdmin) return
+    if (!app.user.privileges['plugin_newsletter:send']) return
     // topic page
     const actionBar = $('.topic .action-bar')
     addNewsletterDropdown(actionBar)
@@ -35,7 +34,7 @@ $('document').ready(function () {
       })
     }
     async function openNewsletterModal() {
-      const groups = await socket.emit('admin.Newsletter.getGroups')
+      const groups = await socket.emit('user.Newsletter.getGroups')
       const title = data.title
       const url = data.url
       let body = data.posts[0].content
@@ -69,7 +68,7 @@ $('document').ready(function () {
                   return false
                 }
 
-                await socket.emit('admin.Newsletter.send', {subject: title, body, groups, topicUrl, override, blacklist})
+                await socket.emit('user.Newsletter.send', {subject: title, body, groups, topicUrl, override, blacklist})
                 // TODO: return info
 
                 alertType('success', 'Newsletter Sent')
@@ -121,7 +120,7 @@ $('document').ready(function () {
         }
 
         // Load saved blacklist.
-        socket.emit('admin.Newsletter.getBlacklist', {}, (err, blacklist) => {
+        socket.emit('user.Newsletter.getBlacklist', {}, (err, blacklist) => {
           if (!err && blacklist) $blacklist.val(blacklist)
         })
 
